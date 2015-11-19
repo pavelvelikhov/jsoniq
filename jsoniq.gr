@@ -1,11 +1,11 @@
-grammar jsoniq;            // Define the grammar for JSONiq
+// Define the grammar for JSONiq
+grammar jsoniq;
 
 // Program is the highest-level entity in JSONiq and
 // can either be a library module (a collection of functions) or a
 // main module that includes a query expression that will be
 // evaluated. The main module can also contain a number of function
 // definitions.
-
 
 program :( (K_JSONIQ ((K_ENCODING StringLiteral) |
             (K_VERSION StringLiteral (K_ENCODING StringLiteral)?)) ';') ?
@@ -249,11 +249,17 @@ jsonItemTest : K_OBJECT
            | K_ARRAY
            | K_JSON_ITEM ;
 
-// Atomic types, just made this a name, so check in the implementation for supported types
-// The standard specifices 'string','boolean','integer','decimal','double', but also 
+// Atomic types. The standard specifices 'string','boolean','integer','decimal','double', but also 
 // mentions that all XQuery atomics are included
 
-atomicType : K_ATOMIC | K_NULL | NCName ;
+atomicType : K_ATOMIC | K_STRING | K_INTEGER
+        | K_DECIMAL | K_DOUBLE | K_BOOLEAN
+	| K_LONG | K_SHORT | K_BYTE
+	| K_FLOAT | K_DATE | K_DATETIME | K_DATETIMESTAMP
+	| K_GDAY | K_GMONTH | K_GMONTHDAY | K_GYEAR | K_GYEARMONTH
+	| K_TIME | K_DURATION | K_DAYTIMEDURATION | K_YEARMONTHDURATION
+	| K_BASE64NIBARY | K_HEXBINARY | K_ANYURI
+        | K_NULL; 
 
 // URI Literal
 
@@ -346,6 +352,30 @@ K_OBJECT: O B J E C T;
 K_ARRAY: A R R A Y;
 K_JSON_ITEM: J S O N '-' I T E M;
 K_ATOMIC: A T O M I C;
+K_STRING: S T R I N G;
+K_INTEGER: I N T E G E R;
+K_DECIMAL: D E C I M A L;
+K_DOUBLE: D O U B L E;
+K_BOOLEAN: B O O L E A N;
+K_LONG: L O N G;
+K_SHORT: S H O R T;
+K_BYTE: B Y T E;
+K_FLOAT: F L O A T;
+K_DATE: D A T E;
+K_DATETIME: D A T E T I M E;
+K_DATETIMESTAMP: D A T E T I M E S T A M P;
+K_GDAY: G D A Y;
+K_GMONTH: G M O N T H;
+K_GMONTHDAY: G M O N T H D A Y;
+K_GYEAR: G Y E A R;
+K_GYEARMONTH: G Y E A R M O N T H;
+K_TIME: T I M E;
+K_DURATION: D U R A T I O N;
+K_DAYTIMEDURATION: D A Y T I M E D U R A T I O N;
+K_YEARMONTHDURATION: Y E A R M O N T H D U R A T I O N;
+K_BASE64NIBARY: B A S E '6' '4' B I N A R Y;
+K_HEXBINARY: H E X B I N A R Y;
+K_ANYURI: A N Y U R I;
 K_NULL: N U L L;
 
 fragment A : [aA];
@@ -400,6 +430,8 @@ Comment : '(:' (CommentContents | Comment)* ':)' ;
 
 fragment
 CommentContents: ~[:\(\)];
+
+// This is XML Name without the ':' character
 
 NCName : NameStartChar (NameChar)*;
 
