@@ -6,3 +6,7 @@ The plan:
  2. Build a Java processor
  3. Add in functions from SAXON
  4. Add schema features
+
+===================
+
+Current status: Basic grammar working (except the lexical rules are simplistic and update syntax is not included)
