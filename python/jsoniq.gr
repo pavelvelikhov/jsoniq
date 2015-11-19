@@ -6,9 +6,14 @@ grammar jsoniq;            // Define the grammar for JSONiq
 // evaluated. The main module can also contain a number of function
 // definitions.
 
-program : (K_JSONIQ ((K_ENCODING StringLiteral) |
+
+program :( (K_JSONIQ ((K_ENCODING StringLiteral) |
             (K_VERSION StringLiteral (K_ENCODING StringLiteral)?)) ';') ?
-          (libraryModule | mainModule) ;
+          (libraryModule | mainModule) | error) ;
+
+// Catch lexer errors with this rule
+
+error : UNEXPECTED_CHAR ;
 
 // The Main Module consists of the Prolog and the query expression
 
@@ -244,7 +249,10 @@ jsonItemTest : K_OBJECT
            | K_ARRAY
            | K_JSON_ITEM ;
 
-// Atomic types
+// Atomic types, just made this a name, so check in the implementation for supported types
+// The standard specifices 'string','boolean','integer','decimal','double', but also 
+// mentions that all XQuery atomics are included
+
 atomicType : K_ATOMIC | K_NULL | NCName ;
 
 // URI Literal
@@ -380,23 +388,46 @@ DecimalLiteral : ('.' Digits) | (Digits '.' [0-9]*) ;
 
 DoubleLiteral : (('.' Digits) | (Digits ('.' [0-9]*)?)) [eE] [+-]? Digits ;
 
-StringLiteral : '"' Char* '"' ;
+StringLiteral : '"' ( PredefinedCharRef | CharRef | ~["\\] )* '"' ;
+
+fragment
+PredefinedCharRef: '\\' [\/\"\b\f\n\r\t] ;
+
+fragment
+CharRef : '\\' 'u' [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F][0-9a-fA-F];
 
 Comment : '(:' (CommentContents | Comment)* ':)' ;
 
-// [http://www.w3.org/TR/REC-xml-names/#NT-NCName-w-o-dot-and-keywords]
-// [\u9\uA\uD\u20..\uD7FF\uE000..\uFFFDu\10000..\u10FFFF]+ ;
-NCName : [a-zA-Z] [a-zA-Z0-9_]*;
-
-// Chars: [http://www.w3.org/TR/REC-xml#NT-Char]
 fragment
-Char : [a-zA-Z_];
+CommentContents: ~[:\(\)];
+
+NCName : NameStartChar (NameChar)*;
+
+fragment
+NameStartChar: 
+	[a-zA-Z] |
+	'\u00C0'..'\u00D6' |
+	'\u00D8'..'\u00F6' |
+	'\u00F8'..'\u02FF' |
+	'\u0370'..'\u037D' |
+	'\u037F'..'\u1FFF' |
+	'\u200C'..'\u200D' |
+	'\u2070'..'\u218F' |
+	'\u2C00'..'\u2FEF' |
+	'\u3001'..'\uD7FF' |
+	'\uF900'..'\uFDCF' |
+	'\uFDF0'..'\uFFFD' ; 
+
+fragment
+NameChar:
+	NameStartChar | '-' | '.' |
+	[0-9] |
+   	'\u00B7' |
+        '\u0300'..'\u036F' |
+        '\u203F'..'\u2040';
 
 fragment
 Digits   : [0-9]+ ;
-
-// Should be: CommentContents : (Char+ - (Char* ('(:' | ':)') Char*)) ;
-CommentContents : (Char+);
 
 WS
     : (' '
@@ -404,3 +435,5 @@ WS
     | '\n'
     | '\r')+ ->skip
     ;
+
+UNEXPECTED_CHAR : .;
