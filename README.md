@@ -9,4 +9,4 @@ The plan:
 
 ===================
 
-Current status: Basic grammar working (except the lexical rules are simplistic and update syntax is not included)
+Current status: Basic grammar working, except for update syntax and comment syntax
