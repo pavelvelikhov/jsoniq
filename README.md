@@ -2,10 +2,11 @@
 The spec is here: http://www.jsoniq.org/
 
 The plan:
- 1. Build ANTLR grammar, build a prototype processor in Python3 w/o any XQuery functions
- 2. Build a Java processor
- 3. Add in functions from SAXON
- 4. Add schema features
+ 1. Build ANTLR grammar, publish it on the ANTLR site
+ 2. Build a prototype processor in Python3 w/o any XQuery functions or advanced operations
+ 3. Build a Java or Scala processor
+ 4. Add in functions from SAXON
+ 5. Add schema features
 
 ===================
 
