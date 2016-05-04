@@ -11,3 +11,4 @@ The plan:
 ===================
 
 Current status: Basic grammar working, except for update syntax and comment syntax
+Project is discontinued, all efforts shifter towards pythonql
